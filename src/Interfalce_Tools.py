@@ -86,7 +86,7 @@ def details_aktualisieren(event, hauptlist, deteil_Liste, Flug_Daten):
 
 # --- Data.json zu aktualisieren -----
 def dados_speichern(Flug_Daten):
-    with open("Data.json", "w", encoding="utf-8") as f:
+    with open("data/Data.json", "w", encoding="utf-8") as f:
         json.dump(Flug_Daten, f, indent=4)
 
 
@@ -147,7 +147,7 @@ def plots_list_ausblenden(deteil_Liste, dropdown_button, zustand):
 
 
 def edit_key_value(sim_name, Flug_Daten, key, neuer_wert):
-    filename="Data.json"
+    filename="data/Data.json"
 
     if sim_name in Flug_Daten:
         Flug_Daten[sim_name][key] = neuer_wert
