@@ -13,7 +13,7 @@ Datenvisualisierung: Erstellung präziser Flugbahnen und Grafiken.
 # Installation
 1. Repository klonen:
 
-	C:> git clone https://github.com/DEIN_USER/fallschirmsimulation.git
+	C:> git clone https://github.com/gustavosimon2509/Fallschirmsimulation.git
 
 2. In den Projektordner wechseln:
 
