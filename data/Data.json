@@ -1,33 +1,41 @@
 {
     "ARCHER_test1": {
         "name": "ARCHER test 1",
-        "Masse": 38.0,
+        "Masse": 40,
         "Apogeum": 3000.0,
         "Delta_h_drogue": 26,
-        "deployment_main": 500,
-        "main_offnen": true,
-        "drogue_offnen": true,
-        "R_Drogue": 0.42,
+        "deployment_main": 300,
+        "main_offnen": "true",
+        "drogue_offnen": "true",
+        "R_Drogue": 0.4,
         "R_Main": 2.6,
         "R_roket": 0.1,
         "laenge": 3.0,
         "farbe": "red",
-        "combine": "no"
+        "combine": "no",
+        "Oeffnungszeit_Main": 0.9,
+        "Oeffnungszeit_Drogue": 0.2,
+        "v_Apogeum_Polar": "[30, 90]",
+        "Bilder": "true"
     },
     "ARCHER_test2": {
         "name": "ARCHER test 2",
-        "Masse": 40.0,
+        "Masse": 40,
         "Apogeum": 3000.0,
         "Delta_h_drogue": 26,
-        "deployment_main": 500,
-        "main_offnen": false,
+        "deployment_main": 300,
+        "main_offnen": "true",
         "drogue_offnen": "True",
-        "R_Drogue": 0.42,
+        "R_Drogue": 0.3959,
         "R_Main": 2.6,
         "R_roket": 0.1,
         "laenge": 3.0,
         "farbe": "purple",
-        "combine": "no"
+        "combine": "no",
+        "Oeffnungszeit_Main": 0.9,
+        "Oeffnungszeit_Drogue": 0.2,
+        "v_Apogeum_Polar": "[30, 90]",
+        "Bilder": "True"
     },
     "PIPE2_test1": {
         "name": "PIPE2 test 1",
@@ -35,14 +43,21 @@
         "Apogeum": 384.0,
         "Delta_h_drogue": 26,
         "deployment_main": 100,
-        "main_offnen": true,
-        "drogue_offnen": true,
+        "main_offnen": "true",
+        "drogue_offnen": "true",
         "R_Drogue": 0.28,
         "R_Main": 1.25,
         "R_roket": 0.0525,
         "laenge": 1.2,
         "farbe": "brown",
-        "combine": "no"
+        "combine": "no",
+        "Oeffnungszeit_Main": 0.5,
+        "Oeffnungszeit_Drogue": 0.2,
+        "v_Apogeum_Polar": [
+            20,
+            0
+        ],
+        "Bilder": "true"
     },
     "PIPE2_test2": {
         "name": "PIPE2 test 2",
@@ -50,13 +65,20 @@
         "Apogeum": 384.0,
         "Delta_h_drogue": 26,
         "deployment_main": 150,
-        "main_offnen": false,
-        "drogue_offnen": true,
+        "main_offnen": "false",
+        "drogue_offnen": "true",
         "R_Drogue": 0.28,
         "R_Main": 1.25,
         "R_roket": 0.0525,
         "laenge": 1.2,
         "farbe": "green",
-        "combine": "no"
+        "combine": "no",
+        "Oeffnungszeit_Main": 0.5,
+        "Oeffnungszeit_Drogue": 0.2,
+        "v_Apogeum_Polar": [
+            20,
+            0
+        ],
+        "Bilder": "true"
     }
 }
