@@ -23,7 +23,7 @@ fernster.title("Fallschirmsimulation")
 liste_bool = tk.BooleanVar(value=False)
 ist_dunkel = tk.BooleanVar(value=False)
 plots_speichern = tk.BooleanVar(value=False)
-plots_zeigen = tk.BooleanVar(value=False)
+plots_zeigen = tk.BooleanVar(value=True)
 
 
 
@@ -96,7 +96,7 @@ mehrere_Sim = tk.Checkbutton(
 )
 
 
-liste_sichtbar = {"offen": False}
+liste_sichtbar = {"offen": True}
 liste.bind("<<ListboxSelect>>", lambda event: details_aktualisieren(event, liste, deteil_List, Flug_Daten))
 # --- DER DROPDOWN BUTTON ---
 dropdown_button = tk.Button(
@@ -121,8 +121,10 @@ deteil_List = tk.Listbox(
     borderwidth=0, highlightthickness=0,
     
     activestyle="none",
-    width=25, height=14
+    width=25, height=20
 )
+deteil_List.place(relx=0.95, rely=0.15, anchor="ne")
+
 #Doppenklick auf Deteil_list
 deteil_List.bind("<Double-1>", lambda event: details_bearbeiten(
     event, deteil_List, liste, Flug_Daten
