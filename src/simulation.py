@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 import cmath
+from mpl_toolkits.mplot3d import Axes3D
 
 import sys
 import os
@@ -21,48 +22,83 @@ ges_geschw = []
 winkel_tabelle = []
 
 
-def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_offnen,
-                   drogue_offnen, R_Drogue, R_Main, R_roket, laenge, farbe, combine, v_x_Polar = (20,0),
-                   Bilder = True, x_start = 0, x_end = 1000):
+def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_offnen, drogue_offnen,
+                   R_Drogue, R_Main, R_roket, laenge, farbe, combine, Oeffnungszeit_Main, Oeffnungszeit_Drogue,
+                   Bilder, v_Apogeum_Polar = (20,0)):
     """Parametern:
-     v_x_Polar = (Betrag, Winkel) - 0 grad ist nach Norden, 90 grad ist nach West, ...
-     Bilder = "True" or "False"
-     x_start = Anfangszeit
-     x_end = Endzeit
-     combine = "no", "begin", "continue" or "end" (die längste simulation bei "end" bitte)
-
-     """
+    ----------
+    name : str
+        Name der Simulation / Rakete
+    Masse : float
+        Masse der Rakete (kg)
+    Apogeum : float
+        Maximale Flughöhe / Startposition für die Simulation (m)
+    Delta_h_drogue : float
+        Höhendifferenz vom Apogeum, bei der der Drogue-Chute öffnet (m)
+    deployment_main : float
+        Höhe, bei der der Main-Chute ausg縱öst wird (m)
+    main_offnen : str/bool
+        "True" oder "False" für die Aktivierung des Main-Chutes
+    drogue_offnen : str/bool
+        "True" oder "False" für die Aktivierung des Drogue-Chutes
+    R_Drogue : float
+        Radius des Drogue-Fallschirms (m)
+    R_Main : float
+        Radius des Main-Fallschirms (m)
+    R_roket : float
+        Radius der Rakete (m)
+    laenge : float
+        Länge der Rakete (m)
+    farbe : str
+        Farbe für den Plot
+    combine : str
+        "no", "begin", "continue" oder "end" (die längste Simulation bei "end" bitte)
+    Oeffnungszeit_Main : float
+        Zeitspanne für die vollständige Öffnung des Main-Chutes (s)
+    Oeffnungszeit_Drogue : float
+        Zeitspanne für die vollständige Öffnung des Drogue-Chutes (s)
+    Bilder : str/bool
+        "True" oder "False" (Grafiken/Plots anzeigen oder nicht)
+    v_Apogeum_Polar : tuple, optional
+        (Betrag, Winkel) - 0 Grad ist nach Norden, 90 Grad ist nach West, ... Default ist (20,0)
+    """
     
+    main_offnen = (main_offnen == "True") or (main_offnen == "true")
+    drogue_offnen = (drogue_offnen == "True") or (drogue_offnen == "true")
+    Bilder = (Bilder == "True") or (Bilder == "true")
+
     m = Masse
     h0 = Apogeum
 
      ##Innenfunktionen ##
     def A_transition_drogue():
         nonlocal q, t, v_y, drogue_offnen
-        global chute_progress, start_time
+        global start_time
+
         if q:       #print Angaben
           print(f"""\tdrogue fängt zu öffnen nach: {round(t, 2)}s
-          \tGeschw.: {round((v_x.imag**2 + v_x.real**2 + v_y**2)**0.5, 2)}m/s, ({v_x =}m/s, {v_y =})m/s\n""")
+         \tGeschw.: {((v_x.imag**2 + v_x.real**2 + v_y**2)**0.5):.3f}m/s, (v_x = {v_x.real:.3f} + {v_x.imag:.3f}j m/s, v_y = {v_y:.3f}m/s)\n""")
           start_time = t                                        #Anfang Öffnung
           q = False                                             #Nur ein mal
 
-        chute_progress = (t - start_time) / 0.1                 #Elastisch durch 0.1s lang
+        chute_progress = (t - start_time) / Oeffnungszeit_Drogue                 #Öffnungszeit
         A = A_r + (A_drogue - A_r) * chute_progress
         if chute_progress >= 1.0:
           drogue_offnen = False
           A = A_drogue
         return A
-
+ 
     def A_transition_main():
         nonlocal p, t, v_y, main_offnen
-        global chute_progress, start_time
+        global start_time
+        
         if p:     #print Angaben
           print(f"""\tMain fängt zu öffnen nach {round(t, 1)}s an\n\t
-          Geschw.: {round((v_x.imag**2 + v_x.real**2 + v_y**2)**0.5, 2)}m/s ({v_x =}m/s, {v_y =}m/s)\n""")
+          \tGeschw.: {((v_x.imag**2 + v_x.real**2 + v_y**2)**0.5):.3f}m/s, (v_x = {v_x.real:.3f} + {v_x.imag:.3f}j m/s, v_y = {v_y:.3f}m/s)\n""")
           start_time = t                                         #Anfang Öffnung
           p = False                                              #nur ein mal
-
-        chute_progress = (t - start_time) / 0.5                 #Elastisch durch 0.5s lang
+        
+        chute_progress = (t - start_time) / Oeffnungszeit_Main                 #Öffnungszeit
         A = A_drogue + (A_main - A_drogue) * chute_progress
         if chute_progress >= 1.0:
           main_offnen = False
@@ -124,13 +160,13 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
     druck_table = [p for h, p, td, t, v_y, w in atm_profile]
 
 
-    v_x = v_x_Re_Im(v_x_Polar)
+    v_x = v_x_Re_Im(v_Apogeum_Polar)
 
     #########################################
     ######### Simulationsschleife ###########
     #########################################
 
-    while y > 0 and t < t_max:
+    while y > 0:
 
       Druck, temp_d, temp, v_wind_betrag, winkel_wind = get_atm_data(y)
       rho = berechne_Luftdichte(Druck, temp, temp_d)
@@ -213,18 +249,13 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
     Nort_Sud = [z.real for z in Abstand_x]        # Sud ist Reel Positiv
     West_Ost = [-z.imag for z in Abstand_x]       # Ost ist Imagninär Positiv
 
-    # bis wann Plotten
-    if t < x_end:
-      x_end = t
-
     #################################
     ########### Plotten #############
     #################################
 
-    if (combine != "end") and (combine != "continue"):
-        plt.figure(figsize=(14, 6))
-
     if Bilder:
+        if (combine != "end") and (combine != "continue"):
+            plt.figure(figsize=(14, 6))
 
         plt.subplot(3, 3, 1)
         plt.plot(zeiten, hoehen, color = farbe, label = name)
@@ -233,7 +264,6 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
         plt.title("Zeit vs Höhe")
         plt.ylim(0, 1.05* h0)
         plt.grid(True)
-        plt.xlim(x_start, x_end)
         if combine == "end":
           plt.legend()
 
@@ -250,14 +280,12 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
         plt.ylabel("vertikale Geschw. (m/s)")
         plt.title("Zeit vs. vertikale Geschw.")
         plt.grid(True)
-        plt.xlim(x_start, x_end)
 
         plt.subplot(3, 3, 4)
         plt.plot(zeiten, ges_geschw, color = farbe, label = name)
         plt.xlabel('Zeit (s)')
         plt.ylabel('ges. Geschw.')
         plt.title('Zeit vs ges. Geschw.')
-        plt.xlim(x_start, x_end)
         plt.grid(True)
         plt.tight_layout(h_pad=2.0)
 
@@ -274,7 +302,6 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
         plt.xlabel("Zeit (s)")
         plt.ylabel("Kraft (N)")
         plt.title("Kraft vs Zeit")
-        plt.xlim(x_start, x_end)
         plt.grid(True)
 #        plt.ylim(0, F_drag[F_drag.index(max(F_drag))-15] + 100)
 
@@ -284,7 +311,6 @@ def simuliere_flug(name, Masse, Apogeum, Delta_h_drogue, deployment_main, main_o
         plt.xlabel("luftdchte (Kg/m^3)")
         plt.title("Hoehe vs luftdichte")
         plt.ylim(0, 1.05* h0)
-        plt.xlim(x_start, 1.3)
         plt.grid(True)
 
 
