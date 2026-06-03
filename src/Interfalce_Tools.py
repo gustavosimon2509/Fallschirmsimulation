@@ -111,7 +111,7 @@ def details_bearbeiten(event, deteil_Liste, hauptliste, Flug_Daten):
     neuer_wert = sd.askstring("Editieren", f"Neuer Wert für {key}:", initialvalue=str(alter_wert))    
     
     if neuer_wert is not None:
-        if "," in neuer_wert:
+        if "," in neuer_wert and key != "v_Apogeum_Polar":
                 messagebox.showerror(f"Bitte kein Komma nutzen, sonder Punkt")
                 return
         try:            
