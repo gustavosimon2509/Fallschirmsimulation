@@ -14,11 +14,18 @@ with open("data/Data.json", "r", encoding="utf-8") as f:
         Flug_Daten = json.load(f)
 
 def v_x_Re_Im(v_x_Polar):
-  pi = math.pi
-  if v_x_Polar == 0:
-    return 0
-  return v_x_Polar[0]*math.cos(v_x_Polar[1]*pi/180) + v_x_Polar[0]*math.sin(v_x_Polar[1]*pi/180)*1j
+    pi = math.pi
 
+    # 1. Wenn der Wert als String (Text) kommt
+    if isinstance(v_x_Polar, str):
+        v_x_Polar = v_x_Polar.strip()
+        
+        # Klammern entfernen und am Komma trennen
+        sauber = v_x_Polar.replace("[", "").replace("]", "")
+        teile = sauber.split(",")
+        v_x_Polar = (float(teile[0]), float(teile[1]))
+
+    return v_x_Polar[0]*math.cos(v_x_Polar[1]*pi/180) + v_x_Polar[0]*math.sin(v_x_Polar[1]*pi/180)*1j
 
 def lineare_schätzung(zahl_1, zahl_2, faktor):
     return zahl_1 + (zahl_2 - zahl_1) * faktor
